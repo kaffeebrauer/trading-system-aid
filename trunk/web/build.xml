@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+
+<project name="webapp" basedir="." default="deploy.tomcat">
+
+	<property name="common.dir" value="../common"/>
+	<property name="common.lib.dir" value="${common.dir}/lib"/>
+	<property name="common.dist.dir" value="${common.dir}/dist"/>
+	
+	<property name="main.dir" value="../main"/>
+	<property name="main.dist.dir" value="${main.dir}/dist" />
+
+    <property name="src.dir" value="src/java"/>
+    <property name="resources.dir" value="resources"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="web.dir" value="WebRoot"/>
+    <property name="web.lib.dir" value="${web.dir}/WEB-INF/lib"/>
+    <property name="build.dir" value="${web.dir}/WEB-INF/classes"/>
+    
+    <property name="jboss.home.dir" value="/opt/jboss" />
+    <property name="jboss.deploy.dir" value="${jboss.home.dir}/server/tradingsystem/deploy" />
+    <property name="jboss.lib.dir" value="${jboss.home.dir}/server/tradingsystem/lib" />
+    
+    <property name="tomcat.home.dir" value="/opt/tomcat"/>
+    <property name="tomcat.deploy.dir" value="${tomcat.home.dir}/webapps"/>
+
+    <path id="master-classpath">
+        <fileset dir="${common.lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+		<fileset dir="${common.dist.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${main.dist.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <!--
+	    	<fileset dir="${jboss.lib.dir}">
+	            <include name="servlet*.jar"/>
+	            <include name="jsp*.jar"/>
+	        </fileset>
+        -->
+        <pathelement path="${build.dir}"/>
+    </path>
+
+	<target name="clean">
+		<delete dir="${dist.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+		<delete dir="${build.dir}"/>
+		<mkdir dir="${build.dir}"/>
+		<delete dir="${web.lib.dir}"/>
+		<mkdir dir="${web.lib.dir}"/>
+		<delete file="${jboss.deploy.dir}/${ant.project.name}.war" />
+		<delete file="${tomcat.deploy.dir}/${ant.project.name}.war" />
+		<echo message="${ant.project.name} - clean complete"/>
+	</target>
+
+    <target name="build" depends="clean" description="Compile main source tree java files">
+        <javac destdir="${build.dir}" debug="true"
+               deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="master-classpath"/>
+        </javac>
+        <copy todir="${build.dir}">
+        	<fileset dir="${resources.dir}"/>
+        </copy>
+    </target>
+    
+    <target name="dist"  depends="build" description="Creates a war file">
+    	<copy todir="${web.lib.dir}">
+    		<fileset dir="${common.dist.dir}">
+    			<include name="*.jar" />
+    		</fileset>
+    		<fileset dir="${main.dist.dir}">
+    			<include name="*.jar" />
+    		</fileset>
+    		<fileset dir="${common.lib.dir}">
+    			<include name="aspect*.jar" />
+    			<include name="acegi-security*.jar" />
+    			<include name="asm*.jar" />
+    			<include name="commons-beanutils*.jar" />
+    			<include name="commons-lang*.jar" />
+    			<include name="commons-pool*.jar" />
+    			<include name="displaytag*.jar" />
+    			<include name="ehcache*.jar" />
+    			<include name="itext*.jar" />
+    			<include name="mysql*.jar" />
+    			<include name="jstl*.jar" />
+    			<include name="sitemesh*.jar" />
+    			<include name="standard*.jar" />
+    			<include name="spring*.jar" />
+    			<exclude name="*.zip"/>
+    			<!-- Just for tomcat -->
+    			<include name="hibernate*.jar" />
+    			<include name="dom4j*.jar" />
+    			<include name="jta*.jar" />
+    			<include name="commons-dbcp*.jar" />
+    			<include name="ejb3*.jar" />
+    			<include name="commons-collections*.jar" />
+    			<include name="cglib*.jar" />
+    			<include name="antlr*.jar" />
+    			<include name="commons-httpclient*.jar" />
+    			<include name="commons-codec*.jar" />
+    			<include name="log4j*.jar" />
+    		</fileset>
+    	</copy>
+	<war destfile="${dist.dir}/${ant.project.name}.war" webxml="${web.dir}/WEB-INF/web.xml">
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+                <exclude name="/WEB-INF/web.xml" />
+            </fileset>
+        </war>
+        <delete dir="${web.lib.dir}"/>
+    </target>
+
+    <target name="deploy.jboss" depends="dist" description="Deploy application">
+        <copy todir="${jboss.deploy.dir}" >
+            <fileset dir="${dist.dir}">
+                <include name="${ant.project.name}.war"/>
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="deploy.tomcat" depends="dist" description="Deploys in Tomcat">
+    	<copy todir="${tomcat.deploy.dir}" >
+    		<fileset dir="${dist.dir}">
+    			<include name="${ant.project.name}.war"/>
+    		</fileset>
+    	</copy>
+    </target>
+
+</project>
