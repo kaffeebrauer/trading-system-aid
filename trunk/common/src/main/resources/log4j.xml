@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+<!--************************************-->
+<!-- A size based file rolling appender -->
+<!--************************************-->
+	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+    	<param name="File" value="/var/log/personal/tradingSystemProd.log"/>
+     	<param name="Append" value="true"/>
+     	<param name="Threshold" value="DEBUG"/>
+     	<param name="MaxFileSize" value="500KB"/>
+     	<param name="MaxBackupIndex" value="1"/>
+     	<layout class="org.apache.log4j.PatternLayout">
+       		<param name="ConversionPattern" value="%d %-5p [%c:%L] %m%n"/>
+     	</layout>	    
+	</appender>
+	
+<!--************************************-->
+<!-- Database appender -->
+<!--************************************-->
+	<appender name="DATABASE" class="org.apache.log4j.jdbc.JDBCAppender">  
+		<param name="Threshold" value="OFF"/> 
+		<param name="driver" value="com.microsoft.jdbc.sqlserver.SQLServerDriver"/> 
+		<param name="URL" value="jdbc:microsoft:sqlserver://L-DEV001:1433;DatabaseName=prototype;SelectMethod=Cursor"/> 
+		<param name="user" value="prototype"/> 
+		<param name="password" value="prototype"/> 
+		<param name="sql" value="INSERT INTO LOGGING (DATETIME, MESSAGE) VALUES ('%d','%c - %p - %m')"/>
+	</appender>	
+
+<!--**********************************-->
+<!-- EMail events to an administrator -->
+<!--**********************************-->
+	<appender name="SMTP" class="org.apache.log4j.net.SMTPAppender">
+    	<param name="Threshold" value="OFF"/>
+     	<param name="To" value="marisa.espinosa@marketboomer.com"/>
+     	<param name="From" value="marisa.espinosa@marketboomer.com"/>
+     	<param name="Subject" value="Prototype Errors"/>
+     	<param name="SMTPHost" value="localhost"/>
+     	<param name="BufferSize" value="10"/>
+     	<layout class="org.apache.log4j.PatternLayout">
+       		<param name="ConversionPattern" value="[%d{ABSOLUTE},%c{1}] %m%n"/>
+     	</layout>
+	</appender>
+   
+<!--********************************-->
+<!-- Append messages to the console -->
+<!--********************************-->
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+      	<layout class="org.apache.log4j.PatternLayout">
+        	<!-- The default pattern: Date Priority [Category] Message\n -->
+        	<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+		</layout>
+	</appender>
+	
+<!--****************-->
+<!-- Setting levels -->
+<!--****************-->
+	<logger name="com.mapasystems">
+   		<level value="DEBUG"/>
+   	</logger>
+   	<logger name="org.hibernate">
+   		<level value="WARN"/>
+   	</logger>   
+   	<logger name="net.sf">
+   		<level value="WARN"/>
+   	</logger> 
+   	<logger name="org.apache">
+   		<level value="WARN"/>
+   	</logger>
+   	<logger name="net.sourceforge">
+   		<level value="WARN"/>
+   	</logger>
+   	<logger name="org.springframework">
+   		<level value="DEBUG" />
+   	</logger>
+   
+<!--*************************-->
+<!-- Setup the Root category -->
+<!--*************************-->
+	<root>
+    	<appender-ref ref="CONSOLE"/>
+    	<appender-ref ref="FILE" />
+    	<level value="DEBUG"/>
+	</root>
+
+</log4j:configuration>

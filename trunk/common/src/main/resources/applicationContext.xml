@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop" 
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<bean id="sessionFactory" 
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="schemaUpdate" value="${schema.update}" />
+		<property name="annotatedClasses">
+			<list>
+				<value>au.com.openbiz.trading.persistent.currency.Currency</value>
+				<value>au.com.openbiz.trading.persistent.security.Security</value>
+				<value>au.com.openbiz.trading.persistent.technicalanalysis.TechnicalAnalysis</value>
+				<value>au.com.openbiz.trading.persistent.transaction.BuyTransaction</value>
+				<value>au.com.openbiz.trading.persistent.transaction.SellTransaction</value>
+				<value>au.com.openbiz.trading.persistent.transaction.BuySellTransaction</value>
+				<value>au.com.openbiz.trading.persistent.transaction.Transaction</value>
+				<value>au.com.openbiz.trading.persistent.security.Snapshot</value>
+				<value>au.com.openbiz.trading.persistent.portfolio.Portfolio</value>
+				<value>au.com.openbiz.trading.persistent.dividend.Dividend</value>
+				<value>au.com.openbiz.trading.persistent.dividend.InvestmentPlanDividend</value>
+				<value>au.com.openbiz.trading.persistent.shareholding.ShareHolding</value>
+				<value>au.com.openbiz.trading.persistent.watchlist.WatchList</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="order" value="1" />
+		<property name="locations">
+			<list>
+				<!-- ${env} should be received through JVM arguments (-Denv=xxx option) -->
+				<value>classpath:${env}/tradingsystem.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${db.driver}" />
+		<property name="url" value="${db.url}" />
+		<property name="username" value="${db.username}" />
+		<property name="password" value="${db.password}" />
+	</bean>
+	
+	<!-- Data Access Objects -->
+	<bean id="abstractDao" abstract="true">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="currencyDao" class="au.com.openbiz.trading.logic.dao.currency.impl.CurrencyDaoImpl" parent="abstractDao" />
+	<bean id="securityDao" class="au.com.openbiz.trading.logic.dao.security.impl.SecurityDaoImpl" parent="abstractDao" />
+	<bean id="securityPriceDao" class="au.com.openbiz.trading.logic.dao.security.impl.SecurityPriceDaoImpl" />
+	<bean id="snapshotDao" class="au.com.openbiz.trading.logic.dao.security.impl.SnapshotDaoImpl" parent="abstractDao" />
+	<bean id="technicalAnalysisDao" class="au.com.openbiz.trading.logic.dao.technicalanalysis.impl.TechnicalAnalysisDaoImpl" parent="abstractDao" />
+	<bean id="transactionDao" class="au.com.openbiz.trading.logic.dao.transaction.impl.TransactionDaoImpl" parent="abstractDao" />
+	<bean id="buySellTransactionDao" class="au.com.openbiz.trading.logic.dao.transaction.impl.BuySellTransactionDaoImpl" parent="abstractDao" />	
+	<bean id="portfolioDao" class="au.com.openbiz.trading.logic.dao.portfolio.impl.DefaultPortfolioDao" parent="abstractDao" />
+	<bean id="dividendDao" class="au.com.openbiz.trading.logic.dao.dividend.impl.DefaultDividendDao" parent="abstractDao" />
+	<bean id="shareHoldingDao" class="au.com.openbiz.trading.logic.dao.shareholding.impl.DefaultShareHoldingDao" parent="abstractDao" />
+	<bean id="watchListDao" class="au.com.openbiz.trading.logic.dao.watchlist.impl.DefaultWatchListDao" parent="abstractDao" />
+
+	<!-- Manager Caching -->
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:ehcache-caching.xml" />
+	</bean>
+	<bean id="methodCaching" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager" ref="cacheManager" />
+		<property name="cacheName" value="METHODS_CACHE" />
+	</bean>
+	<bean id="methodCachingInterceptor" class="au.com.openbiz.commons.cache.ehcache.MethodCachingInterceptor">
+		<constructor-arg ref="methodCaching" />
+	</bean>
+	<bean id="methodCachingPointCut" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice" ref="methodCachingInterceptor" />
+		<property name="pattern" value=".*find*" />
+	</bean>
+	<bean id="securityPriceManagerCached" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target" ref="securityPriceManager" />
+		<property name="interceptorNames">
+			<list>
+				<value>methodCachingPointCut</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Transactions -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="calculate*" propagation="REQUIRED" />
+			<tx:method name="create*" propagation="REQUIRED" /> 
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="managerPointcut" 
+			expression="execution(* au.com.openbiz.trading.logic.manager..*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="managerPointcut" />
+	</aop:config>
+
+	<!-- Managers -->
+	<bean id="securityManager" class="au.com.openbiz.trading.logic.manager.security.impl.DefaultSecurityManager">
+		<property name="securityDao" ref="securityDao"/>
+	</bean>
+	<bean id="securityPriceManager" class="au.com.openbiz.trading.logic.manager.security.impl.SecurityPriceManagerImpl">
+		<property name="securityPriceDao" ref="securityPriceDao" />
+		<property name="securityDao" ref="securityDao" />
+		<property name="snapshotDao" ref="snapshotDao" />
+		<property name="transactionDao" ref="transactionDao" />
+	</bean>
+	<bean id="movingAverageIndicatorManager" class="au.com.openbiz.trading.logic.manager.indicator.impl.MovingAverageIndicatorManagerImpl" />
+	<bean id="transactionsManager" class="au.com.openbiz.trading.logic.manager.transaction.impl.TransactionManagerImpl">
+		<property name="transactionDao" ref="transactionDao"/>
+		<property name="buySellTransactionDao" ref="buySellTransactionDao" />
+		<property name="shareHoldingManager" ref="shareHoldingManager" />
+	</bean>
+	<bean id="currencyManager" class="au.com.openbiz.trading.logic.manager.currency.impl.DefaultCurrencyManager">
+		<property name="currencyDao" ref="currencyDao" />
+	</bean>
+	<bean id="technicalAnalysisManager" class="au.com.openbiz.trading.logic.manager.technicalanalysis.impl.DefaultTechnicalAnalysisManager">
+		<property name="technicalAnalysisDao" ref="technicalAnalysisDao" />
+	</bean>
+	<bean id="snapshotManager" class="au.com.openbiz.trading.logic.manager.security.impl.DefaultSnapshotManager">
+		<property name="snapshotDao" ref="snapshotDao" />
+	</bean>
+	<bean id="portfolioManager" class="au.com.openbiz.trading.logic.manager.portfolio.impl.DefaultPortfolioManager">
+		<property name="portfolioDao" ref="portfolioDao" />
+		<property name="shareHoldingManager" ref="shareHoldingManager" />
+		<property name="currencyManager" ref="currencyManager" />
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+	<bean id="dividendManager" class="au.com.openbiz.trading.logic.manager.dividend.impl.DefaultDividendManager">
+		<property name="dividendDao" ref="dividendDao" />
+		<property name="shareHoldingManager" ref="shareHoldingManager" />
+	</bean>
+	<bean id="shareHoldingManager" class="au.com.openbiz.trading.logic.manager.shareholding.impl.DefaultShareHoldingManager">
+		<property name="shareHoldingDao" ref="shareHoldingDao" />
+	</bean>
+	<bean id="watchListManager" class="au.com.openbiz.trading.logic.manager.watchlist.impl.DefaultWatchListManager">
+		<property name="watchListDao" ref="watchListDao" />
+	</bean>
+	<bean id="profitLossCalculatorManager" class="au.com.openbiz.trading.logic.manager.profitloss.impl.DefaultProfitLossCalculatorManager">
+		<property name="transactionManager" ref="transactionsManager" />
+		<property name="securityPriceManager" ref="securityPriceManagerCached" />
+	</bean>
+	<bean id="chartManager" class="au.com.openbiz.trading.logic.manager.chart.impl.GoogleChartManager">
+		<constructor-arg index="0"><value>http://chart.apis.google.com/chart?</value></constructor-arg>
+		<constructor-arg index="1"><value>cht=</value></constructor-arg>
+		<constructor-arg index="2"><value>chs=</value></constructor-arg>
+		<constructor-arg index="3"><value>chd=t:</value></constructor-arg>
+		<constructor-arg index="4"><value>chl=</value></constructor-arg>
+		<property name="transactionManager" ref="transactionsManager" />
+		<property name="securityPriceManager" ref="securityPriceManager" />
+	</bean>
+	<bean id="positionSummaryManager" class="au.com.openbiz.trading.logic.manager.positionsummary.impl.DefaultPositionSummaryManager">
+		<property name="transactionManager" ref="transactionsManager" />
+		<property name="securityPriceManager" ref="securityPriceManager" />
+	</bean>
+		
+	<!-- Loaders -->
+	<bean id="securityLoader" class="au.com.openbiz.trading.logic.loader.impl.SecurityLoaderImpl">
+		<property name="securityDao" ref="securityDao" />
+		<property name="inputFile" value="securities.txt" />
+	</bean>
+	<bean id="currencyLoader" class="au.com.openbiz.trading.logic.loader.impl.CurrencyLoaderImpl">
+		<property name="currencyDao" ref="currencyDao" />
+		<property name="inputFile" value="currencies.txt" />
+	</bean>
+	<bean id="transactionLoader" class="au.com.openbiz.trading.logic.loader.impl.TransactionLoaderImpl">
+		<property name="transactionDao" ref="transactionDao" />
+		<property name="securityDao" ref="securityDao" />
+		<property name="currencyDao" ref="currencyDao" />
+		<property name="technicalAnalysisDao" ref="technicalAnalysisDao" />
+		<property name="buySellTransactionDao" ref="buySellTransactionDao" />
+		<property name="inputFile" value="transactions.txt" />
+	</bean>
+	
+	<!-- Command-line Presentation -->
+	<bean id="inputController" class="au.com.openbiz.trading.presentation.inputcontroller.impl.InputControllerImpl" >
+		<property name="commandMap">
+			<map>
+				<entry key="initialLoad" value-ref="initialLoadCommand" />
+				<entry key="snapshot" value-ref="snapshotCommand" />
+			</map>
+		</property>
+	</bean>
+		
+	<bean id="initialLoadCommand" class="au.com.openbiz.trading.presentation.command.impl.InitialLoaderCommand" >
+		<property name="securityLoader" ref="securityLoader" />
+		<property name="currencyLoader" ref="currencyLoader" />
+		<property name="transactionLoader" ref="transactionLoader" />
+	</bean>
+	<bean id="snapshotCommand" class="au.com.openbiz.trading.presentation.command.impl.SnapshotLoaderCommand" >
+		<property name="securityPriceManager" ref="securityPriceManager" />
+	</bean>
+</beans>
+

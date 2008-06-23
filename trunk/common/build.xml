@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<project name="common" default="dist" basedir=".">
+	
+	<property name="common.dir" value="../common"/>
+	<property name="common.lib.dir" value="${common.dir}/lib"/>
+	<property name="dist.dir" value="dist" />
+	<property name="build.dir" value="bin"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="src.dir" value="src/java"/>
+	<property name="resources.dir" value="resources"/>
+	
+	<path id="master-classpath">
+        <fileset dir="${common.lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${build.dir}"/>
+    </path>
+	
+	<target name="clean">
+		<delete dir="${dist.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+		<delete dir="${build.dir}"/>
+		<mkdir dir="${build.dir}"/>
+		<echo message="${ant.project.name} - clean complete"/>
+	</target>
+	
+    <target name="build" depends="clean">
+    	<javac destdir="${build.dir}" debug="true"
+               deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="master-classpath"/>
+        </javac>
+        <copy todir="${build.dir}">
+        	<fileset dir="${resources.dir}"/>
+        </copy>
+    	<echo message="${ant.project.name} - build complete"/>
+    </target>
+	
+	<target name="dist.app" depends="build" description="Creates a distribution to be run as Java application" >
+		<jar jarfile="${dist.dir}/tradingsystem-${ant.project.name}.jar" basedir="${build.dir}" excludes="*Test.class">
+			<manifest>
+				<attribute name="Class-Path" value="./ antlr-2.7.6.jar asm.jar asm-attrs.jar cglib-2.1.3.jar commons-beanutils-1.7.0.jar commons-codec-1.3.jar commons-collections-2.1.1.jar commons-dbcp-1.2.1.jar commons-httpclient-3.0.1.jar commons-lang-2.1.jar commons-logging-1.0.4.jar commons-logging-1.04.jar commons-pool-1.3.jar dom4j-1.6.1.jar ehcache-1.3.0.jar ejb3-persistence.jar hibernate-annotations.jar hibernate-commons-annotations.jar hibernate3.jar hibernate-entitymanager.jar jta.jar log4j-1.2.14.jar mysql-connector-java-3.1.10-bin.jar spring-2.0.6.jar spring-mock.jar xercesImpl-2.6.2.jar"/>
+			</manifest>
+		</jar>
+		<echo message="${ant.project.name} - dist.app complete"/>
+	</target>
+	
+	<target name="dist" depends="build">
+			<jar destfile="${dist.dir}/tradingsystem-${ant.project.name}.jar" basedir="${build.dir}" excludes="*Test.class" />
+			<echo message="${ant.project.name} - dist complete"/>
+	</target>
+</project>

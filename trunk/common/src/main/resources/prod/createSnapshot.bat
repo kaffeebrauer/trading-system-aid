@@ -1,0 +1,1 @@
+java -Denv=prod -jar D:\tradingSystemProd\tradingsystem-main.jar snapshot
