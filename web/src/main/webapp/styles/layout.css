@@ -1,0 +1,98 @@
+.displayBody body {
+	color: black;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 10px;
+}
+
+.footerClass td {
+	color: #FFFFFF;
+    font-size: 10pt;
+    font-family: verdana;
+}
+
+.errorMessage {border: 1px solid red; font-weight: bold;}
+
+.error {border: 1px solid red; font-weight: bold;}
+
+.message {
+   background-color: #336699;
+   border: 1px solid blue;
+   color: #ffcc66;
+   font-weight: bold;
+   text-align: center
+}
+
+.formPropertyName {
+background-color: #336699;
+color: #ffcc66;
+  font-weight : bold;
+}
+
+.formPropertyValue {
+background-color: #eeeecc
+}
+
+.displayTable table {
+border: 1px solid #666;
+width: 80%;
+margin: 20px 0 20px 0;
+}
+
+.displayTable  th, .displayTable  td {
+padding: 2px 4px 2px 4px;
+text-align: left;
+vertical-align: middle
+}
+
+.displayTable  thead tr {
+background-color: #74D281;
+color: white;
+text-align: center
+}
+
+.displayTable  tfoot tr {
+background-color: #74D281;
+color: white;
+text-align: center
+}
+
+.displayTable  th a,.displayTable  th a:visited {
+color: black;
+}
+
+.displayTable th a:hover {
+text-decoration: underline;
+color: white;
+}
+
+.displayTable  tr.odd {
+background-color: #CCFFCC
+}
+
+.displayTable  tr.tableRowEven,.displayTable tr.even {
+background-color: #ffffff
+}
+
+.displayTable  div.exportlinks {
+background-color: #eee;
+border: 1px dotted #999;
+padding: 2px 4px 2px 4px;
+margin: 2px 0 10px 0;
+width: 79%;
+}
+
+.displayTable  span.export {
+padding: 0 4px 1px 20px;
+display: inline;
+cursor: pointer;
+}
+
+.displayTable span.pagelinks {
+background-color: #eee;
+border: 1px dotted #999;
+padding: 2px 4px 2px 4px;
+width: 79%;
+display: block;
+border-top: none;
+margin-bottom: -5px;
+}

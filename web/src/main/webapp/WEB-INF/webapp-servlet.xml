@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	
+	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" >
+		<property name="mappings">
+			<props>
+			    <prop key="/login.htm">loginController</prop>
+			    <prop key="/home.htm">homeController</prop>
+			    <prop key="/loginerror.htm">loginErrorController</prop>
+			    <prop key="/reports/positionSummary.htm">positionSummaryController</prop>
+			    <prop key="/reports/snapshots.htm">snapshotsController</prop>
+			    <prop key="/reports/historicalPerformance.htm">historicalPerformanceController</prop>
+			    <prop key="/reports/closedTransactions.htm">closedTransactionsController</prop>
+			    <prop key="/security/listSecurities.htm">listSecuritiesController</prop>
+			    <prop key="/security/updateSecurity.htm">updateSecurityController</prop>
+			    <prop key="/transaction/listTransactions.htm">listTransactionsController</prop>
+			    <prop key="/transaction/updateTransaction.htm">updateTransactionController</prop>
+			    <prop key="/transaction/updateBuySellTransaction.htm">updateBuySellTransactionController</prop>
+			    <prop key="/portfolio/listPortfolios.htm">listPortfoliosController</prop>
+			    <prop key="/portfolio/updatePortfolio.htm">updatePortfolioController</prop>
+			    <prop key="/dividend/listDividends.htm">listDividendsController</prop>
+			    <prop key="/dividend/updateDividend.htm">updateDividendController</prop>
+			    <prop key="/watchlist/listWatchlists.htm">listWatchListsController</prop>
+			    <prop key="/watchlist/updateWatchlist.htm">updateWatchlistController</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- Controllers -->
+    <bean id="loginController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="login" />
+	</bean>
+    <bean id="homeController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="home" />
+	</bean>
+	<bean id="loginErrorController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="loginerror" />
+	</bean>
+	
+	<bean id="positionSummaryController" class="au.com.openbiz.trading.presentation.controller.reports.PositionSummaryController">
+		<property name="formView" value="/reports/positionSummary" />
+		<property name="positionSummaryManager" ref="positionSummaryManager" />
+		<property name="portfolioManager" ref="portfolioManager" />
+		<property name="chartManager" ref="chartManager" />
+	</bean>
+	<bean id="snapshotsController" class="au.com.openbiz.trading.presentation.controller.reports.SnapshotsController">
+		<property name="snapshotManager" ref="snapshotManager" />
+		<property name="transactionManager" ref="transactionsManager" />
+	</bean>
+	<bean id="historicalPerformanceController" class="au.com.openbiz.trading.presentation.controller.reports.HistoricalPerformanceController">
+		<property name="formView" value="/reports/historicalPerformance" />
+		<property name="profitLossCalculatorManager" ref="profitLossCalculatorManager" />
+		<property name="portfolioManager" ref="portfolioManager" />
+	</bean>
+	<bean id="closedTransactionsController" class="au.com.openbiz.trading.presentation.controller.reports.ClosedTransactionsController">
+		<property name="transactionManager" ref="transactionsManager" />
+	</bean>
+	<bean id="listSecuritiesController" class="au.com.openbiz.trading.presentation.controller.security.ListSecuritiesController">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+	<bean id="updateSecurityController" class="au.com.openbiz.trading.presentation.controller.security.UpdateSecurityController">
+	    <property name="commandClass" value="au.com.openbiz.trading.persistent.security.Security"/>
+		<property name="formView" value="/security/updateSecurity" />
+		<property name="successView" value="redirect:/security/listSecurities.htm" />
+		<property name="cancelView" value="redirect:/security/listSecurities.htm" />
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+	<bean id="listTransactionsController" class="au.com.openbiz.trading.presentation.controller.transaction.ListTransactionsController">
+		<property name="transactionManager" ref="transactionsManager"/>
+	</bean>
+	<bean id="updateTransactionController" class="au.com.openbiz.trading.presentation.controller.transaction.UpdateTransactionController">
+		<property name="transactionManager" ref="transactionsManager"/>
+		<property name="securityManager" ref="securityManager" />
+		<property name="currencyManager" ref="currencyManager" />
+		<property name="technicalAnalysisManager" ref="technicalAnalysisManager" />
+		<property name="commandClass" value="au.com.openbiz.trading.presentation.form.transaction.UpdateTransactionForm"/>
+		<property name="formView" value="/transaction/updateTransaction" />
+		<property name="successView" value="redirect:/home.htm" />
+		<property name="cancelView" value="redirect:/home.htm" />
+	</bean>
+	<bean id="updateBuySellTransactionController" class="au.com.openbiz.trading.presentation.controller.transaction.UpdateBuySellTransactionController">
+		<property name="transactionManager" ref="transactionsManager"/>
+		<property name="commandClass" value="au.com.openbiz.trading.presentation.form.transaction.UpdateBuySellTransactionForm"/>
+		<property name="formView" value="/transaction/updateBuySellTransaction" />
+		<property name="successView" value="redirect:/home.htm" />
+		<property name="cancelView" value="redirect:/home.htm" />
+	</bean>
+	<bean id="listPortfoliosController" class="au.com.openbiz.trading.presentation.controller.portfolio.ListPortfoliosController">
+		<property name="portfolioManager" ref="portfolioManager" />
+	</bean>
+	<bean id="updatePortfolioController" class="au.com.openbiz.trading.presentation.controller.portfolio.UpdatePortfolioController">
+		<property name="portfolioManager" ref="portfolioManager" />
+		<property name="currencyManager" ref="currencyManager" />
+		<property name="securityManager" ref="securityManager" />
+		<property name="commandClass" value="au.com.openbiz.trading.presentation.form.portfolio.UpdatePortfolioForm"/>
+		<property name="cancelView" value="redirect:/portfolio/listPortfolios.htm" />
+		<property name="successView" value="redirect:/portfolio/listPortfolios.htm" />
+		<property name="pages">
+			<list>
+				<value>portfolio/updatePortfolioDescription</value>
+				<value>portfolio/updatePortfolioSecurities</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="listDividendsController" class="au.com.openbiz.trading.presentation.controller.dividend.ListDividendsController">
+		<property name="dividendManager" ref="dividendManager" />
+	</bean>
+	<bean id="updateDividendController" class="au.com.openbiz.trading.presentation.controller.dividend.UpdateDividendController" >
+		<property name="securityManager" ref="securityManager"/>
+		<property name="dividendManager" ref="dividendManager" />
+		<property name="commandClass" value="au.com.openbiz.trading.presentation.form.dividend.UpdateDividendForm"/>
+		<property name="formView" value="/dividend/updateDividend" />
+		<property name="successView" value="redirect:/dividend/listDividends.htm" />
+		<property name="cancelView" value="redirect:/dividend/listDividends.htm" />
+	</bean>
+	<bean id="listWatchListsController" class="au.com.openbiz.trading.presentation.controller.watchlist.ListWatchListsController">
+		<property name="watchListManager" ref="watchListManager" />
+	</bean>
+	<bean id="updateWatchlistController" class="au.com.openbiz.trading.presentation.controller.watchlist.UpdateWatchlistController">
+		<property name="watchListManager" ref="watchListManager" />
+		<property name="securityManager" ref="securityManager"/>
+		<property name="commandClass" value="au.com.openbiz.trading.presentation.form.watchlist.UpdateWatchListForm"/>
+		<property name="formView" value="/watchlist/updateWatchlist" />
+		<property name="successView" value="redirect:/watchlist/listWatchlists.htm" />
+		<property name="cancelView" value="redirect:/watchlist/listWatchlists.htm" />
+	</bean>
+	
+	<!-- View resolvers -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property>
+        <property name="prefix"><value>/WEB-INF/pages/</value></property>
+        <property name="suffix"><value>.jsp</value></property>
+    </bean>
+	
+</beans>
