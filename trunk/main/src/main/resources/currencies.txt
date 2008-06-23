@@ -1,0 +1,2 @@
+AUD,0.8316,Australian Dollar to US Dollar
+PES,0.3246,Argentinian Peso to US Dollar
