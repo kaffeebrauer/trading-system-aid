@@ -1,0 +1,9 @@
+QBE,AX,Insurance Group Limited
+TGR,AX,Tassal Group Limited
+WTP,AX,Watpac Limited
+OSH,AX,Oil Search Ltd
+SGX,AX,Sino Gold Mining Ltd
+BLD,AX,Boral Limited
+WDC,AX,Westfield Group
+CBA,AX,Commonwealth Bank of Australia
+DOW,AX,Downer EDI Ltd
