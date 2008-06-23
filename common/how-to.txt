@@ -1,0 +1,33 @@
+How to deploy to prod?
+- Run ant dist.app for commons
+- Run ant dist.app for main
+- Copy from main/dist to deploy place e.g. D:\tradingSystemProd
+- Test running:
+java -Denv=dev -jar D:\tradingSystemProd\tradingSystem-main.jar snapshot
+------------------------------------------------------------------------
+How to init the DB?
+- Create a tsd database in the target env
+- Create tradingsystem-common.jar using "ant dist.app"
+- Create tradingsystem-main.jar using "ant dist.app"
+- Execute MainInputController with -Denv=[env] and initialLoad as program argument "java -Denv=dev -jar dist/tradingsystem-main.jar initialLoad"
+------------------------------------------------------------------------
+How to deploy in Jboss?
+- Go ant in  /home/pablo/workspaces/personals/tradingsystem/common
+- Go ant in  /home/pablo/workspaces/personals/tradingsystem/main
+- Go ant deploy.jboss in /home/pablo/workspaces/personals/tradingsystem/web
+- Start ./run.sh -c tradingsystem -Denv=dev
+------------------------------------------------------------------------
+How to set up a new environment?
+- Do you have JDK? Install it.
+- Do you have Tomcat or Jboss? Install it.
+- Do you have DB? Install it. 
+	- Configure tradingsystem.properties for driver settings
+	- Configure dialect in applicationContext.xml
+- Run builder/build.xml taking into account the following:
+	1. If you have changed mysql, add the jdbc jar in web/build.xml
+	2. Change path of tomcat.home.dir property in web/build.xml
+	3. Select the correct target [tomcat|jboss]
+- If windows, start mysql 'mysqld --console', then use mysql -u root to connect
+- Create a database regarding configuration, default tsd
+- Include -Denv=dev in the arguments when starting tomcat (catalina.bat|sh) or jboss (command line)
+- set JAVA_HOME=c:\program files\java\jdk1.5.0_02

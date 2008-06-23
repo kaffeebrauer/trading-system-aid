@@ -1,0 +1,55 @@
+TODO
+- Create schedulers for everyday data gathering, sending everyday portfolio summaries, 
+- Fixed closed transactions screen
+- Filtering dividends by date and/or security
+- Have a news link http://finance.yahoo.com/rss/headline?s=cba.ax
+- Charts http://ichart.finance.yahoo.com/y?s=cba.ax
+- Review 2.5.x annotations and use them
+- Scanning for stocks (Use of strategy pattern)
+  - List of all listed companies in Australia (http://www.asx.com.au/asx/downloadCsv/ASXListedCompanies.csv)
+
+WISH LIST
+- Fix ERROR [DateHelper] While parsing date
+- Resolve TODOs
+- Split main in a more meaningful project
+- Split applicationContext.xml by layer?
+- Add MessageSource for i18n (spanish and english)
+- Calculate coverage (Cobertura?)
+
+DONE
+- Use eclipse commons OK
+- Draw a UML diagram class OK
+- Override equals and hashcode for persistent classes that will be hold inside a Collection OK
+- Prepare a Load class for the transactions I have OK
+- Develop bussiness logic that automatise my spreadsheet OK
+- Add Spring (Change to Impl + Interfaces) / Plug it in with Hibernate OK
+- Add environment treatment OK
+- Leave it running automatically from Win scheduller OK
+- Install Spring plug-in for editing xmls OK
+- Differenciate between Unit and integration testing OK
+- Add JMock for testing, test as much as possible OK
+- Logs when running win scheduller? OK
+- Complete a builder build.xml OK
+- Create another project using Spring web to have View of portfolio, Add transactions, currencies, securities OK
+- Cache position summary query (possibly using Spring cache) OK
+- Implement menus on top OK
+- Improve snapshots query to show 1 per week (may be fridays) OK
+- Add Portfolio Entity, taking into account cash amount, risk, ROC, initial value 
+	(AbstratWizardController screen 1: create portfolio, screen 2: attach buyTransactions) OK
+- Add Dividend Entity, 1 BuyTransaction will have N Dividends OK
+- Change packages to au.com.openbiz OK
+- Add calendar to updateTransaction OK
+- Add totals in list of dividends OK
+- Implement dividends maintenance including dividend investment plans OK
+- Create ShareHolding entity, modify important relationships with Portfolio, BuyTransaction, Dividend, etc OK
+- Modify Position Summary to use ShareHolding OK
+- Create Watchlist management OK
+- Create Historical Closed transactions report OK
+- Create Historical Portfolio performance by dates OK
+- Use transactions with Spring AOP OK
+- Deploy webapp in tomcat server OK
+- Fix number of week in the DB OK
+- Deploy java app in server OK
+- Change to maven for building OK
+- Use of Google charts (http://chart.apis.google.com/chart?cht=p3&chd=t:70.0,30.0&chs=300x125&chl=CBA|BHP) OK
+- Try to fix send mail functionality (chapter 22 email with spring) OK
