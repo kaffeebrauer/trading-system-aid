@@ -20,9 +20,9 @@ public final class PositionSummaryValueObject implements Serializable, Comparabl
 	private final Snapshot snapshot;
 
 	public PositionSummaryValueObject(
-			BuyTransaction buyTransaction, 
-			SecurityPrice securityPrice, 
-			Security security, 
+			BuyTransaction buyTransaction,
+			SecurityPrice securityPrice,
+			Security security,
 			Snapshot snapshot) {
 		this.buyTransaction = buyTransaction;
 		this.securityPrice = securityPrice;
@@ -43,7 +43,6 @@ public final class PositionSummaryValueObject implements Serializable, Comparabl
 		return snapshot;
 	}
 
-	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
 			.append("buyTransaction", buyTransaction)
