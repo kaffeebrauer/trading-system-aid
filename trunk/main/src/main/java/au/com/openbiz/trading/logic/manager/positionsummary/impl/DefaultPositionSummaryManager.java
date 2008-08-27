@@ -23,20 +23,19 @@ public class DefaultPositionSummaryManager implements PositionSummaryManager {
 
 	private TransactionManager transactionManager;
 	private SecurityPriceManager securityPriceManager;
-	
-	@Override
+
 	public PositionSummaryTransferObject calculatePositionSummary(final Portfolio portfolio) {
 		List<PositionSummaryValueObject> positionSummaryVOs = new ArrayList<PositionSummaryValueObject>();
-		
+
 		BigDecimal marketValueTotal = BigDecimal.ZERO;
 		BigDecimal differenceTotal = BigDecimal.ZERO;
 		BigDecimal boughtAmountTotal = BigDecimal.ZERO;
-		
+
 		List<BuyTransaction> buyTransactionList = null;
 		buyTransactionList = transactionManager.findAllBuyTransactionsThatHaveNotBeenSold(portfolio.getId());
-		
+
 		if(buyTransactionList.isEmpty()) return PositionSummaryTransferObject.EMPTY_POSITION_SUMMARY;
-		
+
 		for (BuyTransaction buyTransaction : buyTransactionList) {
 			//Find last trade stock price
 			SecurityPrice securityPrice = securityPriceManager.findLastTradeStockPrice(buyTransaction.getSecurity());
@@ -52,22 +51,22 @@ public class DefaultPositionSummaryManager implements PositionSummaryManager {
 			snapshot.setReturnOnCapital(new ReturnOnCapitalCalculator(snapshot.getDifference(), boughtAmount).calculate());
 			//Calculate number of weeks since buy
 			snapshot.setNumberOfWeeksSinceBuy(new NumberOfWeeksCalculator(buyTransaction.getTimestamp(), new Timestamp(System.currentTimeMillis())).calculate().intValue());
-			
+
 			//Totals
 			marketValueTotal = marketValueTotal.add(snapshot.getMarketValue());
 			differenceTotal = differenceTotal.add(snapshot.getDifference());
 			boughtAmountTotal = boughtAmountTotal.add(boughtAmount);
-			
+
 			positionSummaryVOs.add(new PositionSummaryValueObject(buyTransaction,securityPrice, buyTransaction.getSecurity(), snapshot));
 		}
-		
+
 		Collections.sort(positionSummaryVOs);
 		BigDecimal rocAverage = new ReturnOnCapitalCalculator(differenceTotal, boughtAmountTotal).calculate();
-		
+
 		return PositionSummaryTransferObject.valueOf(
 				positionSummaryVOs, marketValueTotal, differenceTotal, boughtAmountTotal, rocAverage);
 	}
-	
+
 	public void setTransactionManager(TransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}

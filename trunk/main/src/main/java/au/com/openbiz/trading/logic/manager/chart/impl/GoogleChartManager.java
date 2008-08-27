@@ -43,7 +43,7 @@ public class GoogleChartManager implements ChartManager {
 		this.labelTag = labelTag;
 	}
 	
-	@Override
+	
 	public String buildChartUrl(final Portfolio portfolio, final GoogleChartType chartType, final String size) {
 		if(portfolio == null || portfolio.getId() == null) {
 			throw new IllegalArgumentException("A portfolio is required to build a chart url.");
