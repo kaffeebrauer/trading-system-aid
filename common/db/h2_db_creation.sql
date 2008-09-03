@@ -105,8 +105,7 @@ CREATE TABLE `Dividend` (
   `shareholding_fk` int(11) NOT NULL,
   `type` varchar(15) NOT NULL,
   `alloted_shares` int(5),
-  `allotment_share_price` decimal(15,4),
-  `shareholding_fk` int(11)
+  `allotment_share_price` decimal(15,4)
 );
 
 ---------------------------------------------
