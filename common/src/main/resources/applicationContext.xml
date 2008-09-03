@@ -7,7 +7,7 @@
 
 	<bean id="sessionFactory" 
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="H2InMemoryDB" />
 		<property name="schemaUpdate" value="${schema.update}" />
 		<property name="annotatedClasses">
 			<list>
@@ -28,7 +28,7 @@
 		</property>
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.dialect">${db.dialect}</prop>
 				<prop key="hibernate.show_sql">true</prop>
 			</props>
 		</property>
@@ -90,24 +90,6 @@
 			</list>
 		</property>
 	</bean>
-
-	<!-- Transactions -->
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-	<tx:advice id="txAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
-			<tx:method name="save*" propagation="REQUIRED" />
-			<tx:method name="calculate*" propagation="REQUIRED" />
-			<tx:method name="create*" propagation="REQUIRED" /> 
-		</tx:attributes>
-	</tx:advice>
-	<aop:config>
-		<aop:pointcut id="managerPointcut" 
-			expression="execution(* au.com.openbiz.trading.logic.manager..*(..))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="managerPointcut" />
-	</aop:config>
 
 	<!-- Managers -->
 	<bean id="securityManager" class="au.com.openbiz.trading.logic.manager.security.impl.DefaultSecurityManager">
