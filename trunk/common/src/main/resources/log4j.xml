@@ -7,7 +7,7 @@
 <!-- A size based file rolling appender -->
 <!--************************************-->
 	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-    	<param name="File" value="/var/log/personal/tradingSystemProd.log"/>
+    	<param name="File" value="../logs/tradingSystemProd.log"/>
      	<param name="Append" value="true"/>
      	<param name="Threshold" value="DEBUG"/>
      	<param name="MaxFileSize" value="500KB"/>

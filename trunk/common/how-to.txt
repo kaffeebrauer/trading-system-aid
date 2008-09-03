@@ -31,3 +31,17 @@ How to set up a new environment?
 - Create a database regarding configuration, default tsd
 - Include -Denv=dev in the arguments when starting tomcat (catalina.bat|sh) or jboss (command line)
 - set JAVA_HOME=c:\program files\java\jdk1.5.0_02
+------------------------------------------------------------------------
+How to set up a development environment?
+- Install Maven 2 (download: http://maven.apache.org/download.html; repo: http://repo1.maven.org/maven2/)
+- Install Eclipse (http://www.eclipse.org/downloads/)
+- Install Eclipse Maven plugin (Add new site in Software Updates: http://m2eclipse.sonatype.org/update/)
+- Install TortoiseSVN or Eclipse plugin or any other client
+ - http://code.google.com/p/trading-system-aid/
+------------------------------------------------------------------------
+How to install the h2.jar into maven?
+mvn install:install-file -DgroupId=h2 -DartifactId=h2 -Dversion=1.0 -Dpackaging=jar -Dfile=E:\ts-app\temp\common\lib\h2.jar
+------------------------------------------------------------------------
+How do I create an installable app?
+mvn clean install -Dmaven.test.skip=true -e
+------------------------------------------------------------------------

@@ -52,7 +52,6 @@ public final class PositionSummaryValueObject implements Serializable, Comparabl
 			.toString();
 	}
 
-	@Override
 	public int compareTo(PositionSummaryValueObject valueObject) {
 		return new CompareToBuilder()
 			.append(valueObject.getSnapshot().getDifference(), getSnapshot().getDifference())
