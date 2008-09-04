@@ -1,0 +1,12 @@
+#labels Phase-Deploy,Featured
+*A step by step tutorial on how to run the trading system application.*
+
+= Introduction =
+
+Running the application is extremely simple, however I provide a step by step tutorial to make it even easier.
+
+= Details =
+
+ # Download the trading system app from [http://trading-system-aid.googlecode.com/files/trading-system-app.zip here].
+ # Uncompress the zip file in a convenient directory. Examples: `C:\` (Windows), `/home/<user>/myapps` (Linux).
+ #  
