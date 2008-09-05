@@ -9,4 +9,6 @@ Running the application is extremely simple, however I provide a step by step tu
 
  # Download the trading system app from [http://trading-system-aid.googlecode.com/files/trading-system-app.zip here].
  # Uncompress the zip file in a convenient directory. Examples: `C:\` (Windows), `/home/<user>/myapps` (Linux).
- #  
+ # Go to <uncompressed>\apache-tomcat-5.5.26\bin and execute `startup.bat` (Windows) or `startup` (Linux).
+ # After this, open your browser and go to [http://localhost:8080/tradingsystem/ tradingsystem]
+ # *Enjoy it!* Hoping to get some feedback!
