@@ -1,5 +1,5 @@
 #labels Phase-Deploy,Featured
-#A step by step tutorial on how to run the trading system application.*
+*A step by step tutorial on how to run the trading system application.*
 
 = Introduction =
 
